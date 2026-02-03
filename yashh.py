@@ -1,45 +1,37 @@
-import streamlit as st
 import pandas as pd
-import os
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
 
-# App title
-df = pd.read_csv("ML-P4-Salary_Data.csv")
+# Correct Windows path (raw string)
+df = pd.read_csv(r"C:\Users\hp\Downloads\ML-P4-Salary_Data.csv")
 
-st.set_page_config(page_title="Salary Data Analysis", layout="wide")
-st.title("📊 Salary Data Analysis App")
+print(df.head())
+print(df.describe())
 
-# Show files in directory (debug – safe to keep or remove later)
-st.write("📁 Files in app directory:")
-st.write(os.listdir())
+# Features & target
+X = df.iloc[:, 0].values.reshape(-1, 1)   # YearsExperience
+Y = df.iloc[:, 1].values                  # Salary
 
-# Load dataset (CSV must be in SAME folder as this file)
-try:
-    df = pd.read_csv("ML-P4-Salary_Data.csv")
-    st.success("✅ Dataset loaded successfully!")
-except FileNotFoundError:
-    st.error("❌ CSV file not found. Please check file name and location.")
-    st.stop()
+# Model
+salary_model = LinearRegression()
+salary_model.fit(X, Y)
 
-# Display data
-st.subheader("🔍 Dataset Preview")
-st.dataframe(df.head())
+print("Intercept:", salary_model.intercept_)
+print("Slope:", salary_model.coef_[0])
 
-# Basic info
-st.subheader("📈 Dataset Information")
-st.write("Rows:", df.shape[0])
-st.write("Columns:", df.shape[1])
+# Prediction & score
+Y_pred = salary_model.predict(X)
+print("R2 Score:", r2_score(Y, Y_pred))
 
-# Show column names
-st.subheader("🧾 Column Names")
-st.write(list(df.columns))
+# Plot
+plt.scatter(X, Y, label="Actual Data")
+plt.plot(X, Y_pred, label="Regression Line")
+plt.xlabel("Years of Experience")
+plt.ylabel("Salary")
+plt.title("Experience vs Salary")
+plt.legend()
+plt.show()
 
-# Simple analysis (safe for any salary dataset)
-numeric_cols = df.select_dtypes(include=["int64", "float64"]).columns
-
-if len(numeric_cols) > 0:
-    st.subheader("📊 Summary Statistics")
-    st.write(df[numeric_cols].describe())
-else:
-    st.warning("No numeric columns found for analysis.")
 
 
