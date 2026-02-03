@@ -3,6 +3,8 @@ import pandas as pd
 import os
 
 # App title
+df = pd.read_csv("ML-P4-Salary_Data.csv")
+
 st.set_page_config(page_title="Salary Data Analysis", layout="wide")
 st.title("📊 Salary Data Analysis App")
 
