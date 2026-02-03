@@ -1,4 +1,3 @@
-git init
 import pandas as pd
 
 df = pd.read_csv("/mnt/data/ML-P4-Salary_Data.csv")
