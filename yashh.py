@@ -41,4 +41,4 @@ experience = st.number_input("Enter Years of Experience", 0.0, 50.0)
 salary = model.predict(np.array([[experience]]))
 
 st.write("Predicted Salary:", salary[0])
-streamlit run streamlit_app.py
+
