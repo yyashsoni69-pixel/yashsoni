@@ -1,44 +1,43 @@
-import pandas as pd
-
-df = pd.read_csv("/mnt/data/ML-P4-Salary_Data.csv")
-df.head()
-df.describe()
-X = df.iloc[:, 0].values.reshape(-1, 1)  # YearsExperience
-Y = df.iloc[:, 1].values               # Salary
-salary_model = LinearRegression()
-salary_model.fit(X, Y)
-print("Intercept:", salary_model.intercept_)
-print("Slope:", salary_model.coef_[0])
-
-Y_pred = salary_model.predict(X)
-print("R2 Score:", r2_score(Y, Y_pred))
-plt.scatter(X, Y, label="Actual Data")
-plt.plot(X, Y_pred, color='red', label="Regression Line")
-plt.xlabel("Years of Experience")
-plt.ylabel("Salary")
-plt.title("Experience vs Salary")
-plt.legend()
-plt.show()
-b0_salary, b1_salary = linear_regression_coefficients(X.flatten(), Y)
-print("Custom Intercept:", b0_salary)
-print("Custom Slope:", b1_salary)
-# streamlit_app.py
 import streamlit as st
-import numpy as np
-from sklearn.linear_model import LinearRegression
 import pandas as pd
+import os
 
-df = pd.read_csv("ML-P4-Salary_Data.csv")
-X = df.iloc[:, 0].values.reshape(-1, 1)
-Y = df.iloc[:, 1].values
+# App title
+st.set_page_config(page_title="Salary Data Analysis", layout="wide")
+st.title("📊 Salary Data Analysis App")
 
-model = LinearRegression()
-model.fit(X, Y)
+# Show files in directory (debug – safe to keep or remove later)
+st.write("📁 Files in app directory:")
+st.write(os.listdir())
 
-st.title("Salary Prediction App")
+# Load dataset (CSV must be in SAME folder as this file)
+try:
+    df = pd.read_csv("ML-P4-Salary_Data.csv")
+    st.success("✅ Dataset loaded successfully!")
+except FileNotFoundError:
+    st.error("❌ CSV file not found. Please check file name and location.")
+    st.stop()
 
-experience = st.number_input("Enter Years of Experience", 0.0, 50.0)
-salary = model.predict(np.array([[experience]]))
+# Display data
+st.subheader("🔍 Dataset Preview")
+st.dataframe(df.head())
 
-st.write("Predicted Salary:", salary[0])
+# Basic info
+st.subheader("📈 Dataset Information")
+st.write("Rows:", df.shape[0])
+st.write("Columns:", df.shape[1])
+
+# Show column names
+st.subheader("🧾 Column Names")
+st.write(list(df.columns))
+
+# Simple analysis (safe for any salary dataset)
+numeric_cols = df.select_dtypes(include=["int64", "float64"]).columns
+
+if len(numeric_cols) > 0:
+    st.subheader("📊 Summary Statistics")
+    st.write(df[numeric_cols].describe())
+else:
+    st.warning("No numeric columns found for analysis.")
+
 
